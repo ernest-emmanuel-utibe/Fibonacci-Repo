@@ -1,0 +1,18 @@
+name: Pull Before Push
+on:
+  push:
+    branches:
+      - master
+jobs:
+  check-pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch latest commits
+        run: git fetch origin master
+      - name: Check if pull is needed
+        run: |
+          git log --left-right --cherry-pick --oneline origin/master..master|
+          grep -q '^>' && exit 1
+      - name: Allow push
+        run: exit 0
